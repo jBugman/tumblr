@@ -34,6 +34,14 @@
 			border-radius: 4px;
 		}
 		
+		.border-radius-7 {
+			-webkit-border-radius: 7px;
+			-moz-border-radius: 7px;
+			-ms-border-radius: 7px;
+			-o-border-radius: 7px;
+			border-radius: 7px;
+		}
+		
 		#container {
 			margin: 0 auto;
 			min-width: 500px;
@@ -141,8 +149,14 @@
 			background: -500px -214px url('/images/dashboard_master_sprite.png?2') no-repeat transparent;
 			margin: 0 0 -5px;
 		}
-		.like-url .liked {
+		.like-url.liked {
 			background-position: -529px -214px!important;
+		}
+		#likes-hack {
+			width: 1px;
+			height: 1px;
+			position: absolute;
+			left: -9999px;
 		}
 		.photo-container .controls a {
 			opacity: 0.8;
@@ -169,6 +183,7 @@
 			margin: 0;
 			line-height: 18px;
 			vertical-align: 0;
+			cursor: default;
 		}
 		
 		#notes {
@@ -192,20 +207,21 @@
 	</style>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('body').on('mouseover', '.like-url', function(e) {
+			$('body').on('click', '.like-url', function(e) {
 				e.preventDefault();
 				var reblog = $($(this).siblings('.reblog-url')[0]);
 				var parts = reblog.attr('href').split('/');
 				var command = $(this).hasClass('liked') ? 'unlike' : 'like';
 				var url = 'http://www.tumblr.com/' + command + '/' + parts.splice(-1) + '?id=' + parts.splice(-1);
-				$(this).attr('href', url);
-				//$.ajax({url: url, context: this}).done(function() { 
-				//	$(this).toggleClass("liked");
-				//});
+				$('#likes-hack').attr('src', url);
+				notes = $($(this).siblings('.notes-count')[0]);
+				notes.text(+(notes.text() || 0) + 1);
+				$(this).toggleClass("liked");
 			});
 		});
 	</script>
 </head>
+<iframe id="likes-hack"></iframe>
 <body>
 	<div id="container">
 		<div id="header">
@@ -222,18 +238,17 @@
 		{block:Posts}
 		{block:Photo}
 		<div class="post photo autopagerize_page_element">
-			<div class="photo-container border-radius-4" style="background: url('{PhotoURL-500}') 0 0 no-repeat;">
-				<img class="border-radius-4" src="{PhotoURL-500}" alt="{PhotoAlt}" style="visibility: hidden;"/>
+			<div class="photo-container border-radius-7" style="background: url('{PhotoURL-500}') 0 0 no-repeat;">
+				<img class="border-radius-7" src="{PhotoURL-500}" alt="{PhotoAlt}" style="visibility: hidden;"/>
 				<a href="{Permalink}" class="permalink"></a>
 				<div class="controls border-radius-4">
-					{block:NoteCount}
-						<span class="notes-count">{NoteCount}</span>
-					{/block:NoteCount}
+					<span class="notes-count">{NoteCount}</span>
 					<a href="{ReblogURL}" class="reblog-url"></a>
 					<a href="#like" class="like-url"></a>
 				</div>
 			</div>
-			<!--	{block:HasTags}
+			<!--
+			{block:HasTags}
 			<li class="tags">
 				<ul>
 					{block:Tags}
@@ -241,7 +256,8 @@
 					{/block:Tags}
 				</ul>
 			</li>
-			{/block:HasTags} -->
+			{/block:HasTags}
+			-->
 		</div>
 		{/block:Photo}
 		{/block:Posts}
